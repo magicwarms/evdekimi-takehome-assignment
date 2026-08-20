@@ -85,6 +85,9 @@ Example response:
 
 Pass the returned `conversation_id` back on the next request to continue the conversation.
 
+## Demo video
+Demo: https://www.loom.com/share/29a3c694279f40eba9fc15c4af9155fd
+
 ---
 
 ## Admin pages
