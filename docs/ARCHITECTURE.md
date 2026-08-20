@@ -15,11 +15,13 @@ obvious and cheap to change.
 ```mermaid
 flowchart TD
     U[Client / cURL / Swagger UI] -->|POST /api/chat| API
+    U -->|GET /api/properties<br/>POST /api/bookings| REST
     ADM[Admin browser] -->|HTTP Basic| ADMIN
 
     subgraph FASTAPI["FastAPI application (stateless)"]
         MW[Middleware: request_id, timing, error handlers]
         API[Chat router]
+        REST[REST routers<br/>properties, bookings]
         ADMIN[Admin router - Jinja2 pages]
     end
 
@@ -38,6 +40,9 @@ flowchart TD
     T3 --> S2
     T4 --> S3[faq_service]
     T5 --> S4[escalation_service]
+
+    REST -.same services, no LLM.-> S1
+    REST -.-> S2
 
     S1 --> DB[(SQLite)]
     S2 --> DB
@@ -79,9 +84,12 @@ property must exist", "search is capped at 5 results" — lives in the service.
 
 That single rule is what makes the rest cheap:
 
-- `booking_service.create_booking()` is reachable from the agent, from a plain REST
-  endpoint, from the admin page, and from a future cron job or a second agent, with no
-  duplication and no re-testing.
+- `booking_service.create_booking()` has three callers today — the `book_viewing` tool,
+  `POST /api/bookings`, and the admin panel — and a future cron job or second agent would
+  be a fourth, with no duplication and no re-testing. The REST routers are the proof
+  rather than the promise: `app/routers/properties.py` and `app/routers/bookings.py`
+  contain no rules of their own, and `tests/test_api.py` asserts that double-booking is
+  still refused when you come in through HTTP instead of through the model.
 - The business rules are testable without an LLM. `tests/test_services.py` runs in
   milliseconds and needs no API key.
 - If we later replace the LLM, or drop the agent entirely for some flows, the rules stay

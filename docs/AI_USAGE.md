@@ -143,7 +143,7 @@ the client`.
 Agent-written code reads plausibly whether or not it is correct, so nothing here was
 accepted on appearance alone:
 
-- **37 tests**, all passing with no API key: `python -m pytest -q`.
+- **46 tests**, all passing with no API key: `python -m pytest -q`.
 - Failure paths exercised by hand against the running server: empty body returns 422; an
   invalid API key returns a clean 503 with a request id and no stack trace.
 - Every admin page loaded and checked for real data; `/admin` returns 401 without

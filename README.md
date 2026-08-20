@@ -85,6 +85,28 @@ Example response:
 
 Pass the returned `conversation_id` back on the next request to continue the conversation.
 
+### The same capabilities without the model
+
+Because the business rules live in services rather than inside the tools, every capability
+the agent has is also a plain REST endpoint — no LLM call, no token spend — for callers
+that already know what they want.
+
+| Endpoint | What it does |
+|---|---|
+| `GET /api/properties?city=Izmir&max_price=6000000` | Search listings |
+| `GET /api/properties/{id}` | One listing, `404` if it does not exist |
+| `GET /api/properties/{id}/slots` | Viewing slots still free |
+| `POST /api/bookings` | Book a viewing directly |
+
+```bash
+curl -X POST localhost:8000/api/bookings -H "Content-Type: application/json" \
+  -d '{"property_id":1,"customer_name":"Ada Lovelace","customer_phone":"05551112233","slot":"2026-08-22 10:00"}'
+```
+
+These routers hold no logic of their own. `POST /api/bookings` calls the same
+`booking_service.create_booking()` the `book_viewing` tool calls, so the same rules apply:
+book that slot twice and the second attempt is a `400`, whichever door you came in through.
+
 ## Demo video
 Demo: https://www.loom.com/share/29a3c694279f40eba9fc15c4af9155fd
 
@@ -111,7 +133,7 @@ visible per turn.
 ## Tests
 
 ```bash
-python -m pytest -q       # 37 tests, no API key needed
+python -m pytest -q       # 46 tests, no API key needed
 ```
 
 The agent loop is tested against a `FakeLLM` that replays scripted messages, so the loop,
@@ -125,8 +147,9 @@ covered without network calls or spend.
 The full reasoning is in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md); the short version:
 
 - **Tools contain no business logic.** They are thin adapters over a service layer, so the
-  same `booking_service.create_booking()` is reachable from the agent, from REST, from the
-  admin page, and from any future agent — without duplication.
+  same `booking_service.create_booking()` is reachable from the agent, from
+  `POST /api/bookings`, from the admin page, and from any future agent — without
+  duplication. The tests assert the rules hold on every one of those paths.
 - **Tool choice belongs to the model.** The system prompt describes a role, not routing
   rules. Each tool's docstring says *when* to use it, and that docstring is what the model
   actually reads. If the model picks wrong, the fix is the docstring, not an `if`.
@@ -156,9 +179,9 @@ app/
     tools/__init__.py  Tool registry -- the extensibility seam
     tools/*.py         One file per tool
   services/            All business logic
-  routers/             chat, health, admin
+  routers/             chat, properties, bookings, health, admin
   templates/           Jinja2 admin pages
-tests/                 37 tests, no API key required
+tests/                 46 tests, no API key required
 docs/                  Architecture, diagram source, AI usage log
 ```
 

@@ -1,10 +1,12 @@
 flowchart TD
     U[Client / cURL / Swagger UI] -->|POST /api/chat| API
+    U -->|GET /api/properties<br/>POST /api/bookings| REST
     ADM[Admin browser] -->|HTTP Basic| ADMIN
 
     subgraph FASTAPI["FastAPI application (stateless)"]
         MW[Middleware: request_id, timing, error handlers]
         API[Chat router]
+        REST[REST routers<br/>properties, bookings]
         ADMIN[Admin router - Jinja2 pages]
     end
 
@@ -23,6 +25,9 @@ flowchart TD
     T3 --> S2
     T4 --> S3[faq_service]
     T5 --> S4[escalation_service]
+
+    REST -.same services, no LLM.-> S1
+    REST -.-> S2
 
     S1 --> DB[(SQLite)]
     S2 --> DB

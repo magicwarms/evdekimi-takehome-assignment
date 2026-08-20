@@ -29,3 +29,40 @@ class ChatResponse(BaseModel):
 class ErrorResponse(BaseModel):
     error: str
     request_id: Optional[str] = None
+
+
+# The models below back the plain REST endpoints - the same services the agent's
+# tools call, reachable over ordinary HTTP without going through the LLM.
+
+class PropertyResponse(BaseModel):
+    id: int
+    title: str
+    city: str
+    district: Optional[str] = None
+    property_type: str
+    bedrooms: int
+    price: int
+    currency: str
+    description: Optional[str] = None
+    is_available: bool
+
+
+class ViewingSlotsResponse(BaseModel):
+    property_id: int
+    slots: List[str] = Field(..., description="Slots not yet booked for this property.")
+
+
+class BookingRequest(BaseModel):
+    property_id: int = Field(..., ge=1)
+    customer_name: str = Field(..., min_length=1, max_length=120)
+    customer_phone: str = Field(..., min_length=5, max_length=40)
+    slot: str = Field(..., description="One of the slots from GET /api/properties/{id}/slots.")
+
+
+class BookingResponse(BaseModel):
+    booking_id: int
+    property_id: int
+    property_title: str
+    customer_name: str
+    slot: str
+    status: str

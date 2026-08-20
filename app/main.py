@@ -12,7 +12,7 @@ from app.config import settings
 from app.database import init_db
 from app.errors import AppError
 from app.logging_config import get_logger, setup_logging
-from app.routers import admin, chat, health
+from app.routers import admin, bookings, chat, health, properties
 
 setup_logging(settings.log_level)
 logger = get_logger(__name__)
@@ -39,6 +39,8 @@ app = FastAPI(
 
 app.include_router(health.router)
 app.include_router(chat.router)
+app.include_router(properties.router)
+app.include_router(bookings.router)
 app.include_router(admin.router)
 
 

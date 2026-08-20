@@ -72,6 +72,97 @@ def test_every_response_carries_a_request_id():
     assert client.get("/health").headers["X-Request-ID"]
 
 
+# -------------------------------------------------------- plain REST access
+#
+# These endpoints share their services with the agent's tools. The tests assert
+# that the business rules hold identically whichever door you come in through.
+
+def test_properties_can_be_searched_without_the_llm():
+    response = client.get("/api/properties", params={"city": "Izmir"})
+
+    assert response.status_code == 200
+    results = response.json()
+    assert results
+    assert all(item["city"] == "Izmir" for item in results)
+
+
+def test_property_search_applies_every_filter():
+    results = client.get("/api/properties", params={
+        "city": "Istanbul", "max_price": 3000000, "min_bedrooms": 1,
+    }).json()
+
+    assert all(item["price"] <= 3000000 for item in results)
+    assert all(item["bedrooms"] >= 1 for item in results)
+
+
+def test_a_missing_property_is_a_clean_404():
+    response = client.get("/api/properties/9999")
+
+    assert response.status_code == 404
+    assert "error" in response.json()
+
+
+def test_free_slots_are_listed_for_a_property():
+    body = client.get("/api/properties/1/slots").json()
+
+    assert body["property_id"] == 1
+    assert body["slots"]
+
+
+def test_a_booking_can_be_made_over_plain_rest():
+    slot = client.get("/api/properties/1/slots").json()["slots"][0]
+
+    response = client.post("/api/bookings", json={
+        "property_id": 1, "customer_name": "Ada Lovelace",
+        "customer_phone": "05551112233", "slot": slot,
+    })
+
+    assert response.status_code == 201
+    body = response.json()
+    assert body["status"] == "confirmed"
+    assert body["booking_id"]
+
+    # The service rule, not the router, is what removes the slot.
+    assert slot not in client.get("/api/properties/1/slots").json()["slots"]
+
+
+def test_the_same_slot_cannot_be_booked_twice_over_rest():
+    """The double-booking rule lives in the service, so it holds here too."""
+    slot = client.get("/api/properties/1/slots").json()["slots"][0]
+    payload = {"property_id": 1, "customer_name": "Ada Lovelace",
+               "customer_phone": "05551112233", "slot": slot}
+
+    assert client.post("/api/bookings", json=payload).status_code == 201
+
+    second = client.post("/api/bookings", json=payload)
+    assert second.status_code == 400
+    assert "already booked" in second.json()["error"]
+
+
+def test_booking_an_unoffered_slot_is_rejected():
+    response = client.post("/api/bookings", json={
+        "property_id": 1, "customer_name": "Ada Lovelace",
+        "customer_phone": "05551112233", "slot": "1999-01-01 09:00",
+    })
+
+    assert response.status_code == 400
+
+
+def test_booking_a_missing_property_is_a_404():
+    slot = client.get("/api/properties/1/slots").json()["slots"][0]
+
+    response = client.post("/api/bookings", json={
+        "property_id": 9999, "customer_name": "Ada Lovelace",
+        "customer_phone": "05551112233", "slot": slot,
+    })
+
+    assert response.status_code == 404
+
+
+def test_booking_rejects_an_incomplete_body():
+    assert client.post("/api/bookings", json={"property_id": 1}).status_code == 422
+
+
 # -------------------------------------------------------------------- admin
 
 def test_admin_requires_authentication():
