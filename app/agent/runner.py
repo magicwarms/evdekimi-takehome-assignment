@@ -138,7 +138,17 @@ def run_agent(user_message: str,
     history = load_history(conversation_id)
     save_message(conversation_id, "user", user_message)
 
-    llm = llm or build_llm()
+    if llm is None:
+        # Building the client can fail too (missing key, bad base url). That is
+        # still an "AI unavailable" problem, so report it as one rather than
+        # letting it escape as an unhandled 500.
+        try:
+            llm = build_llm()
+        except LLMError:
+            raise
+        except Exception as exc:
+            logger.exception("Could not build the LLM client")
+            raise LLMError(str(exc))
 
     messages = [SystemMessage(content=get_system_prompt())]
     messages.extend(history)
