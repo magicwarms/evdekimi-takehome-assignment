@@ -1993,33 +1993,3 @@ Run each of these and confirm the output before recording the video.
    Turkish"), send a new chat message, confirm the behaviour changed with no restart.
 8. **Extensibility claim is true:** as a live demo, add a trivial 6th tool file and one
    line in `ALL_TOOLS`, restart, confirm it appears in `/health`. Nothing else changed.
-
-### Demo video — **one video, under 5:00 total**
-
-The brief has two video lines: *"Short (5–10 min) demo video"* and *"Explain how your
-architecture would scale to 100× traffic, in a video, less than 5 minutes."* The hard
-constraint is the **under-5-minutes** one, so we ship a single video that comes in under
-5:00 and covers both the demo and the scaling story.
-
-| Time | Segment | What's on screen |
-|---|---|---|
-| 0:00–0:45 | Problem + architecture | The 1-page diagram. Name the layers, state the rule: *tools hold no business logic*. |
-| 0:45–1:30 | Tool registry, no if/else | `agent/tools/__init__.py` then `runner.py`. Say plainly: **"there is no keyword routing anywhere — the model picks the tool, and the tool docstrings are the only selection signal."** |
-| 1:30–2:45 | Live demo | Four `curl` calls. Highlight `tools_used` in each response: `answer_faq` → `search_property` → `list_viewing_slots` + `book_viewing` → `escalate_to_human`. |
-| 2:45–3:15 | Admin page | `/admin/conversations/<id>` — the full trace of user turn → tool JSON → reply. Edit the system prompt live, send one message, show behaviour changed with no restart. |
-| 3:15–4:20 | **Scaling to 100×** | The scaling table. Lead with the headline below. |
-| 4:20–4:45 | Trade-offs + wrap | Two or three rows of the trade-off table and one "what I'd do next". |
-
-**Recording notes**
-
-- **Script it and rehearse once.** 4:45 is tight; unscripted runs land at 8 minutes.
-- **Pre-warm everything before recording:** server already running, DB seeded, all four
-  `curl` commands pasted into the terminal history (press ↑), admin page already logged in
-  in a second tab. Dead air waiting for a cold start eats 30 seconds you don't have.
-- **Don't read code aloud line by line.** Point at the registry and the loop, state the
-  design rule, move on.
-- If you overrun, cut the trade-offs segment — the README and `ARCHITECTURE.md` already
-  cover it in writing. Never cut the scaling segment; it's an explicit requirement.
-- Mention in the README that the video is deliberately under 5:00 to satisfy the scaling
-  constraint, and point to `docs/ARCHITECTURE.md` for the long-form version. That turns a
-  possible "too short" reaction into visible attention to the brief.
