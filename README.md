@@ -171,4 +171,4 @@ architecture-scaling explanation to be delivered in a video of less than five mi
 The long-form version of everything it covers is in
 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
-The video:
+The video: https://www.loom.com/share/347c70bd3dd9410192cfd74ee13a48c0
