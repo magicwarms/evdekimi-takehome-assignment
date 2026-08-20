@@ -146,9 +146,11 @@ def run_agent(user_message: str,
             llm = build_llm()
         except LLMError:
             raise
-        except Exception as exc:
+        except Exception:
+            # The detail is in the log above; the client gets the generic
+            # message so we never leak provider internals or key fragments.
             logger.exception("Could not build the LLM client")
-            raise LLMError(str(exc))
+            raise LLMError()
 
     messages = [SystemMessage(content=get_system_prompt())]
     messages.extend(history)
@@ -159,13 +161,14 @@ def run_agent(user_message: str,
     for step in range(settings.max_tool_iterations):
         try:
             ai_message = llm.invoke(messages)
-        except Exception as exc:
-            # Network error, bad API key, rate limit, provider outage.
+        except Exception:
+            # Network error, bad API key, rate limit, provider outage. The full
+            # detail goes to the log; the customer gets a generic message.
             logger.exception("LLM call failed", extra={"extra_data": {
                 "conversation_id": conversation_id,
             }})
             save_message(conversation_id, "assistant", FALLBACK_REPLY)
-            raise LLMError(str(exc))
+            raise LLMError()
 
         messages.append(ai_message)
 
