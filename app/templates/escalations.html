@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Escalations{% endblock %}
+{% block content %}
+<h1>Escalations</h1>
+<p class="muted">Conversations the agent handed over to a human colleague.</p>
+<table>
+  <tr><th>ID</th><th>Reason</th><th>Summary</th><th>Contact</th><th>Status</th><th></th></tr>
+  {% for e in escalations %}
+  <tr>
+    <td>{{ e.id }}</td>
+    <td>{{ e.reason }}</td>
+    <td>{{ e.summary }}</td>
+    <td>{{ e.contact or "-" }}</td>
+    <td>{{ e.status }}</td>
+    <td>
+      {% if e.status == 'open' %}
+      <form method="post" action="/admin/escalations/{{ e.id }}/close">
+        <button type="submit">Close</button>
+      </form>
+      {% endif %}
+    </td>
+  </tr>
+  {% else %}
+  <tr><td colspan="6" class="muted">No escalations.</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

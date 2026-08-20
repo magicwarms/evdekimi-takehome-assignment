@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h1>Dashboard</h1>
+<p class="muted">Model in use: <b>{{ model }}</b></p>
+<div class="cards">
+  <div class="card"><b>{{ stats.conversations }}</b><span>Conversations</span></div>
+  <div class="card"><b>{{ stats.messages }}</b><span>Messages</span></div>
+  <div class="card"><b>{{ stats.bookings }}</b><span>Bookings</span></div>
+  <div class="card"><b>{{ stats.escalations }}</b><span>Open escalations</span></div>
+  <div class="card"><b>{{ stats.properties }}</b><span>Properties</span></div>
+  <div class="card"><b>{{ stats.faqs }}</b><span>FAQs</span></div>
+</div>
+{% endblock %}

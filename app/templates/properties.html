@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Properties{% endblock %}
+{% block content %}
+<h1>Properties</h1>
+<table>
+  <tr><th>ID</th><th>Title</th><th>Location</th><th>Type</th><th>Beds</th><th>Price</th></tr>
+  {% for p in properties %}
+  <tr>
+    <td>{{ p.id }}</td>
+    <td>{{ p.title }}</td>
+    <td>{{ p.city }} / {{ p.district }}</td>
+    <td>{{ p.property_type }}</td>
+    <td>{{ p.bedrooms }}</td>
+    <td>{{ "{:,}".format(p.price) }} {{ p.currency }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+<h1>Bookings</h1>
+<table>
+  <tr><th>ID</th><th>Property</th><th>Customer</th><th>Phone</th><th>Slot</th><th>Status</th></tr>
+  {% for b in bookings %}
+  <tr>
+    <td>{{ b.id }}</td>
+    <td>{{ b.property_title }}</td>
+    <td>{{ b.customer_name }}</td>
+    <td>{{ b.customer_phone }}</td>
+    <td>{{ b.slot }}</td>
+    <td>{{ b.status }}</td>
+  </tr>
+  {% else %}
+  <tr><td colspan="6" class="muted">No bookings yet.</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

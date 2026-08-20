@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Conversation{% endblock %}
+{% block content %}
+<h1>Conversation {{ conversation_id[:8] }}</h1>
+<p><a href="/admin/conversations">&larr; back to all conversations</a></p>
+<p class="muted">
+  The full trace: what the customer said, which tool the model chose, what the tool
+  returned, and the final reply.
+</p>
+<table>
+  <tr><th>Role</th><th>Tool</th><th>Content</th><th>Time</th></tr>
+  {% for m in messages %}
+  <tr>
+    <td class="role-{{ m.role }}">{{ m.role }}</td>
+    <td>{{ m.tool_name or "-" }}</td>
+    <td {% if m.role == 'tool' %}class="tool-json"{% endif %}>{{ m.content }}</td>
+    <td class="muted">{{ m.created_at[11:19] }}</td>
+  </tr>
+  {% else %}
+  <tr><td colspan="4" class="muted">No messages in this conversation.</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

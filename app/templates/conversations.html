@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Conversations{% endblock %}
+{% block content %}
+<h1>Conversations</h1>
+<table>
+  <tr><th>ID</th><th>User</th><th>Messages</th><th>Started</th></tr>
+  {% for c in conversations %}
+  <tr>
+    <td><a href="/admin/conversations/{{ c.id }}">{{ c.id[:8] }}</a></td>
+    <td>{{ c.user_id or "-" }}</td>
+    <td>{{ c.message_count }}</td>
+    <td>{{ c.created_at[:19] }}</td>
+  </tr>
+  {% else %}
+  <tr><td colspan="4" class="muted">No conversations yet.</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

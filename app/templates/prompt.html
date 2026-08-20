@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Prompt{% endblock %}
+{% block content %}
+<h1>System prompt</h1>
+{% if saved %}<p class="ok">Saved. It applies to the next message immediately.</p>{% endif %}
+<p class="muted">
+  Stored in the database, not in code, so behaviour can be tuned without a redeploy.
+</p>
+<form method="post">
+  <textarea name="system_prompt">{{ prompt }}</textarea>
+  <p><button type="submit">Save prompt</button></p>
+</form>
+{% endblock %}
