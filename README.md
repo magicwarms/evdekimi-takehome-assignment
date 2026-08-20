@@ -164,9 +164,11 @@ docs/                  Architecture, diagram source, AI usage log
 
 ---
 
-## Demo video
+## Explanation video: Explain how your architecture would scale to 100× traffic
 
 The video is deliberately kept **under 5 minutes**, because the brief requires the
 architecture-scaling explanation to be delivered in a video of less than five minutes.
 The long-form version of everything it covers is in
 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+
+The video:
