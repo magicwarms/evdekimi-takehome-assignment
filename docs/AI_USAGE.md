@@ -62,14 +62,20 @@ dropping it. Shipping a stack of superseded pins to avoid a five-minute install 
 trade, and it is exactly the kind of thing a reviewer notices. This is the correction I am
 most confident was right.
 
-### 3. The demo video: I caught a requirement the agent had misread
+### 3. The videos: I caught a requirement the agent had misread
 
-The agent's first plan had a 5–10 minute video with the scaling explanation as a segment
-inside it. Re-reading the brief, the scaling requirement says **"in a video, less than 5
-minutes"** — a hard cap, not a suggestion about a segment.
+The agent's first plan had one 5–10 minute video with the scaling explanation as a segment
+inside it. Re-reading the brief, those are two separate lines: a **5–10 min demo video**
+under the deliverables, and the architecture-scaling explanation **"in a video, less than
+5 minutes"** under the minimum requirements. That second number is a hard cap, not a
+suggestion about a segment — and no single recording can be both longer than five minutes
+and shorter than five minutes.
 
-I had it re-plan around a single video that comes in under 5:00 total. Where the two
-video lines in the brief conflict, the explicit numeric constraint wins.
+So the submission ships **two videos**: the demo, and a separate scaling explanation that
+comes in under 5:00. Both are linked from the README. Reading two adjacent constraints as
+one requirement is the kind of mistake that is cheap to make and expensive to discover
+after submitting, which is why I re-read the brief against the plan rather than against my
+memory of it.
 
 ### 4. I confirmed this document belongs in the submission
 
