@@ -1,0 +1,33 @@
+flowchart TD
+    U[Client / cURL / Swagger UI] -->|POST /api/chat| API
+    ADM[Admin browser] -->|HTTP Basic| ADMIN
+
+    subgraph FASTAPI["FastAPI application (stateless)"]
+        MW[Middleware: request_id, timing, error handlers]
+        API[Chat router]
+        ADMIN[Admin router - Jinja2 pages]
+    end
+
+    API --> RUN[Agent runner<br/>loop, capped at N steps]
+    RUN <-->|bind_tools / tool_calls| LLM[(OpenAI gpt-4o-mini<br/>via langchain-openai)]
+
+    RUN --> REG{Tool registry<br/>ALL_TOOLS}
+    REG --> T1[search_property]
+    REG --> T2[list_viewing_slots]
+    REG --> T3[book_viewing]
+    REG --> T4[answer_faq]
+    REG --> T5[escalate_to_human]
+
+    T1 --> S1[property_service]
+    T2 --> S2[booking_service]
+    T3 --> S2
+    T4 --> S3[faq_service]
+    T5 --> S4[escalation_service]
+
+    S1 --> DB[(SQLite)]
+    S2 --> DB
+    S3 --> DB
+    S4 --> DB
+
+    ADMIN --> DB
+    RUN -.saves every turn.-> DB
