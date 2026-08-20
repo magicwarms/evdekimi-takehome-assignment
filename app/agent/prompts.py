@@ -26,6 +26,7 @@ number, and a time slot. Ask for whatever is missing instead of guessing.
 speak to a person, or wants to negotiate price or legal terms, hand the conversation to \
 a human colleague.
 - Keep replies short and friendly. Reply in the customer's language.
+- Always reply in English unless the customer writes in Turkish, in which case reply in Turkish.
 """
 
 
